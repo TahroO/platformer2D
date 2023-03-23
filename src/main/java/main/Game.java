@@ -1,7 +1,9 @@
 package main;
 
-import entities.Player;
-import levels.LevelManager;
+import gameStates.GameState;
+import gameStates.Menu;
+import gameStates.*;
+
 
 import java.awt.*;
 
@@ -11,10 +13,10 @@ public class Game implements Runnable {
     private Thread gameThread;
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
-    private Player player;
-    private LevelManager levelManager;
+    private Playing playing;
+    private Menu menu;
     public final static int TILES_DEFAULT_SIZE = 32;
-    // scale should always be a round number / level and player are now scalable
+    // scale should always be a round number / level and player scalable
     public final static float SCALE = 2f;
     public final static int TILES_IN_WIDTH = 26;
     public final static int TILES_IN_HEIGHT = 14;
@@ -37,8 +39,8 @@ public class Game implements Runnable {
     }
 
     private void initClasses() {
-        player = new Player(200, 200, (int) (64 * SCALE), (int) (40 * SCALE));
-        levelManager = new LevelManager(this);
+        menu = new Menu(this);
+        playing = new Playing(this);
     }
 
     // run the gameLoop in own thread to keep performance stable
@@ -46,18 +48,35 @@ public class Game implements Runnable {
         gameThread = new Thread(this);
         gameThread.start();
     }
+
     public void update() {
-        levelManager.update();
-        player.update();
-        player.loadLevelData(levelManager.getCurrentLevel().getLvlData());
+        switch (GameState.state) {
+            case MENU:
+                menu.update();
+                break;
+            case PLAYING:
+                playing.update();
+                break;
+            default:
+                break;
+
+        }
 
     }
 
     public void render(Graphics g) {
-        levelManager.draw(g);
-        // player should be drawn "on top" of level, or it will not be visible
-        player.render(g);
+        switch (GameState.state) {
+            case MENU:
+                menu.draw(g);
+                break;
+            case PLAYING:
+                playing.draw(g);
+                break;
+            default:
+                break;
+        }
     }
+
     // gameLoop advanced
     @Override
     public void run() {
@@ -99,12 +118,18 @@ public class Game implements Runnable {
             }
         }
     }
-    public Player getPlayer() {
-        return player;
-    }
 
     // if focus is lost stop moving etc.
     public void windowFocusLost() {
-        player.resetDirBooleans();
+        if (GameState.state == GameState.PLAYING) {
+            playing.getPlayer().resetDirBooleans();
+        }
+    }
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public Playing getPlaying() {
+        return playing;
     }
 }
