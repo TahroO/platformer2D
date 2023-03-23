@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import static utils.Constants.PlayerConstants.*;
-import static utils.HelpMethods.canMoveHere;
+import static utils.HelpMethods.*;
 
 public class Player extends Entity {
     // will contain all animations
@@ -16,13 +16,19 @@ public class Player extends Entity {
     private int playerAction = IDLE;
     private int width, height;
     private boolean moving = false, attacking = false;
-    private boolean left, up, right, down;
+    private boolean left, up, right, down, jump;
     private float playerSpeed = 2.0f;
     // store levelData for hitBoxCollision
     private int[][] lvlData;
     // difference between sprite image corner and character image corner
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 4 * Game.SCALE;
+    // jumping and gravity field values
+    private float airSpeed = 0f;
+    private float gravity = 0.04f * Game.SCALE;
+    private float jumpSpeed = -2.25f * Game.SCALE;
+    private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
+    private boolean inAir = false;
 
 
     public Player(float x, float y, int width, int height) {
@@ -30,7 +36,8 @@ public class Player extends Entity {
         loadAnimation();
         this.width = width;
         this.height = height;
-        initHitBox(x, y, 20 * Game.SCALE, 28 * Game.SCALE);
+        // reducing height by 1px for hitBox
+        initHitBox(x, y, 20 * Game.SCALE, 27 * Game.SCALE);
     }
 
     public void update() {
@@ -45,11 +52,11 @@ public class Player extends Entity {
 
     public void render(Graphics g) {
         // cut out image from spriteAtlas also hitBoxRelevant!
-        g.drawImage(animations[playerAction][aniIndex], (int)(hitBox.x - xDrawOffset),
-                (int)(hitBox.y - yDrawOffset),
+        g.drawImage(animations[playerAction][aniIndex], (int) (hitBox.x - xDrawOffset),
+                (int) (hitBox.y - yDrawOffset),
                 width, height, null);
         // draw hitBox onTop of player
-        drawHitBox(g);
+//        drawHitBox(g);
     }
 
     private void updateAnimationTick() {
@@ -74,6 +81,15 @@ public class Player extends Entity {
         } else {
             playerAction = IDLE;
         }
+        if (inAir) {
+            if (airSpeed < 0) {
+                // going up
+                playerAction = JUMP;
+            } else {
+                // falling
+                playerAction = FALLING;
+            }
+        }
         if (attacking) {
             playerAction = ATTACK_1;
         }
@@ -89,34 +105,74 @@ public class Player extends Entity {
 
     private void updatePosition() {
         moving = false;
+        // check if we are jumping setting inAir true
+        if (jump) {
+            jump();
+        }
+
         // no move when no button is pressed at all
-        if (!left && !right && !up && !down) {
+        if (!left && !right && !inAir) {
             return;
         }
-        float xSpeed = 0, ySpeed = 0;
+        float xSpeed = 0;
         // only move when one button is pressed directionWise
-        if (left && !right) {
-            xSpeed = -playerSpeed;
-        } else if (right && !left) {
-            xSpeed = playerSpeed;
+        if (left) {
+            xSpeed -= playerSpeed;
         }
-        if (up && !down) {
-            ySpeed = -playerSpeed;
-        } else if (down && !up) {
-            ySpeed = playerSpeed;
+        if (right) {
+            xSpeed += playerSpeed;
         }
-//        // check if we can move at next position
-//        if (canMoveHere(x + xSpeed, y + ySpeed, width, height, lvlData)) {
-//            this.x += xSpeed;
-//            this.y += ySpeed;
-//            moving = true;
-//        }
+        // check if we leave the floor
+        if (!inAir) {
+            if (!isEntityOnFloor(hitBox, lvlData)) {
+                inAir = true;
+            }
+        }
+        if (inAir) {
+            if (canMoveHere(hitBox.x, hitBox.y + airSpeed, hitBox.width, hitBox.height, lvlData)) {
+                hitBox.y += airSpeed;
+                airSpeed += gravity;
+                // check left and right possible direction
+                updateXPos(xSpeed);
+            } else {
+                // hitting roof or floor
+                hitBox.y = getEntityYPosUnderRoofOrAboveFloor(hitBox, airSpeed);
+                // moving down and hit floor
+                if (airSpeed > 0) {
+                    resetInAir();
+                } else {
+                    // hitting roof
+                    airSpeed = fallSpeedAfterCollision;
+                }
+                updateXPos(xSpeed);
+            }
+        } else {
+            updateXPos(xSpeed);
+        }
+        moving = true;
+    }
+
+    private void jump() {
+        // if in air do not jump again
+        if (inAir) {
+            return;
+        }
+        inAir = true;
+        airSpeed = jumpSpeed;
+    }
+
+    private void resetInAir() {
+        inAir = false;
+        airSpeed = 0;
+    }
+
+    private void updateXPos(float xSpeed) {
         // check if we can move at next position
-        if (canMoveHere(hitBox.x + xSpeed, hitBox.y + ySpeed,
-                hitBox.width, hitBox.height, lvlData)) {
+        if (canMoveHere(hitBox.x + xSpeed, hitBox.y, hitBox.width, hitBox.height, lvlData)) {
             hitBox.x += xSpeed;
-            hitBox.y += ySpeed;
-            moving = true;
+        } else {
+            // place hitBox directly next to wall without gap
+            hitBox.x = getEntityXPosNextToWall(hitBox, xSpeed);
         }
     }
 
@@ -135,6 +191,10 @@ public class Player extends Entity {
 
     public void loadLevelData(int[][] lvlData) {
         this.lvlData = lvlData;
+        // check if entity is in air at start of lvl
+        if (!isEntityOnFloor(hitBox, lvlData)) {
+            inAir = true;
+        }
     }
 
     public boolean isLeft() {
@@ -178,5 +238,8 @@ public class Player extends Entity {
 
     public void setAttacking(boolean attacking) {
         this.attacking = attacking;
+    }
+    public void setJump(boolean jump) {
+        this.jump = jump;
     }
 }

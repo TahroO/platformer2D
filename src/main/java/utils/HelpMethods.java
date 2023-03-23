@@ -3,6 +3,8 @@ package utils;
 import com.sun.source.tree.BreakTree;
 import main.Game;
 
+import java.awt.geom.Rectangle2D;
+
 public class HelpMethods {
     // check collision with hitBox corners
     public static boolean canMoveHere(float x, float y, float width, float height, int[][] lvlData) {
@@ -40,5 +42,49 @@ public class HelpMethods {
             return true;
         }
         return false;
+    }
+    // check if rectangle collides with border of tile
+    public static float getEntityXPosNextToWall(Rectangle2D.Float hitBox, float xSpeed) {
+        // coordinates of current tile we are in
+        int currentTile = (int)(hitBox.x / Game.TILES_SIZE);
+        if (xSpeed > 0) {
+            // right
+            // pixelValue for current tile
+            int tileXPos = currentTile * Game.TILES_SIZE;
+            // offset between playerHitBox and tileBorder
+            int xOffset = (int) (Game.TILES_SIZE - hitBox.width);
+            // actual position -1 to not cross tileBorder with hitBoxBorder
+            return tileXPos + xOffset - 1;
+        } else {
+            // left
+            return currentTile * Game.TILES_SIZE;
+        }
+    }
+    // places hitBox right above the floor or under roof
+    public static float getEntityYPosUnderRoofOrAboveFloor(Rectangle2D.Float hitBox, float airSpeed) {
+        // coordinates of current tile we are in
+        int currentTile = (int)(hitBox.y / Game.TILES_SIZE);
+        if (airSpeed > 0) {
+            // falling - touching floor
+            // pixelValue for current tile
+            int tileYPos = currentTile * Game.TILES_SIZE;
+            // offset between playerHitBox and tileBorder
+            int yOffset = (int) (Game.TILES_SIZE - hitBox.height);
+            // actual position -1 to not cross tileBorder with hitBoxBorder
+            return tileYPos + yOffset - 1;
+        } else {
+            // jumping
+            return currentTile * Game.TILES_SIZE;
+        }
+    }
+    public static boolean isEntityOnFloor(Rectangle2D.Float hitBox, int[][] lvlData) {
+        // check pixel below bottomLeft and bottomRight + 1px
+        if (!isSolid(hitBox.x, hitBox.y + hitBox.height + 1, lvlData )) {
+            if (!isSolid(hitBox.x + hitBox.width, hitBox.y + hitBox.height + 1, lvlData )) {
+                // not on floor with hitBox corners
+                return false;
+            }
+        }
+        return true;
     }
 }
