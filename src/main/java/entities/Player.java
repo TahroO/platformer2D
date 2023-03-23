@@ -17,7 +17,7 @@ public class Player extends Entity {
     private int width, height;
     private boolean moving = false, attacking = false;
     private boolean left, up, right, down, jump;
-    private float playerSpeed = 2.0f;
+    private float playerSpeed = 1.0f * Game.SCALE;
     // store levelData for hitBoxCollision
     private int[][] lvlData;
     // difference between sprite image corner and character image corner
@@ -37,7 +37,7 @@ public class Player extends Entity {
         this.width = width;
         this.height = height;
         // reducing height by 1px for hitBox
-        initHitBox(x, y, 20 * Game.SCALE, 27 * Game.SCALE);
+        initHitBox(x, y, (int)(20 * Game.SCALE), (int)(27 * Game.SCALE));
     }
 
     public void update() {
