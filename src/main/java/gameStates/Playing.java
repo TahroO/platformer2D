@@ -55,6 +55,11 @@ public class Playing extends State implements StateMethods {
             player.setAttacking(true);
         }
     }
+    public void mouseDragged(MouseEvent event) {
+        if (isPause) {
+            pauseOverlay.mouseDragged(event);
+        }
+    }
 
     @Override
     public void mousePressed(MouseEvent event) {
