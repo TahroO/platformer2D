@@ -1,5 +1,7 @@
 package ui;
 
+import gameStates.GameState;
+import gameStates.Playing;
 import main.Game;
 import main.GameWindow;
 import utils.LoadSave;
@@ -13,11 +15,13 @@ import static utils.Constants.UI.URMButtons.URM_SIZE;
 
 public class PauseOverlay {
     private BufferedImage backgroundImage;
+    private Playing playing;
     private int bgX, bgY, bgWidth, bgHeight;
     private SoundButton musicButton, sfxButton;
     private UrmButton menuB, replayB, unpauseB;
 
-    public PauseOverlay() {
+    public PauseOverlay(Playing playing) {
+        this.playing = playing;
         loadBackground();
         createSoundButtons();
         createUrmButtons();
@@ -79,6 +83,12 @@ public class PauseOverlay {
             musicButton.setMousePressed(true);
         } else if (isIn(event, sfxButton)) {
             sfxButton.setMousePressed(true);
+        } else if (isIn(event, menuB)) {
+            menuB.setMousePressed(true);
+        } else if (isIn(event, replayB)) {
+            replayB.setMousePressed(true);
+        } else if (isIn(event, unpauseB)) {
+            unpauseB.setMousePressed(true);
         }
     }
 
@@ -92,19 +102,44 @@ public class PauseOverlay {
             if (sfxButton.isMousePressed()) {
                 sfxButton.setMuted(!sfxButton.isMuted());
             }
+        } else if (isIn(event, menuB)) {
+            if (menuB.isMousePressed()) {
+                GameState.state = GameState.MENU;
+                playing.unpauseGame();
+            }
+        } else if (isIn(event, replayB)) {
+            if (replayB.isMousePressed()) {
+                System.out.println("replay lvl!");
+            }
+        } else if (isIn(event, unpauseB)) {
+            if (unpauseB.isMousePressed()) {
+                playing.unpauseGame();
+            }
         }
         musicButton.resetBooleans();
         sfxButton.resetBooleans();
+        menuB.resetBooleans();
+        replayB.resetBooleans();
+        unpauseB.resetBooleans();
     }
 
 
     public void mouseMoved(MouseEvent event) {
         musicButton.setMouseOver(false);
         sfxButton.setMouseOver(false);
+        menuB.setMouseOver(false);
+        replayB.setMouseOver(false);
+        unpauseB.setMouseOver(false);
         if (isIn(event, musicButton)) {
             musicButton.setMouseOver(true);
         } else if (isIn(event, sfxButton)) {
             sfxButton.setMouseOver(true);
+        } else if (isIn(event, menuB)) {
+            menuB.setMouseOver(true);
+        } else if (isIn(event, replayB)) {
+            replayB.setMouseOver(true);
+        } else if (isIn(event, unpauseB)) {
+            unpauseB.setMouseOver(true);
         }
     }
     private boolean isIn(MouseEvent event, PauseButton button) {
