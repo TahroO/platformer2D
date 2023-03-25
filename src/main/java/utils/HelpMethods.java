@@ -25,8 +25,9 @@ public class HelpMethods {
         return false;
     }
     private static boolean isSolid(float x, float y, int[][] lvlData) {
+        int maxWidth = lvlData[0].length * Game.TILES_SIZE;
         // check if we are inside the gameWindow
-        if (x < 0 || x >= Game.GAME_WIDTH) {
+        if (x < 0 || x >= maxWidth) {
             return true;
         }
         if (y < 0 || y >= Game.GAME_HEIGHT) {
