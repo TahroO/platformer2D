@@ -50,9 +50,9 @@ public class Player extends Entity {
 
     }
 
-    public void render(Graphics g) {
+    public void render(Graphics g, int lvlOffset) {
         // cut out image from spriteAtlas also hitBoxRelevant!
-        g.drawImage(animations[playerAction][aniIndex], (int) (hitBox.x - xDrawOffset),
+        g.drawImage(animations[playerAction][aniIndex], (int) (hitBox.x - xDrawOffset) - lvlOffset,
                 (int) (hitBox.y - yDrawOffset),
                 width, height, null);
         // draw hitBox onTop of player
@@ -109,11 +109,16 @@ public class Player extends Entity {
         if (jump) {
             jump();
         }
-
         // no move when no button is pressed at all
-        if (!left && !right && !inAir) {
-            return;
+        if (!inAir) {
+            if ((!left && !right) || (right && left)) {
+                return;
+            }
         }
+
+/*        if (!left && !right && !inAir) {
+            return;
+        }*/
         float xSpeed = 0;
         // only move when one button is pressed directionWise
         if (left) {
