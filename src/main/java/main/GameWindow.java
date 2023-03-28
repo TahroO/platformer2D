@@ -12,11 +12,11 @@ public class GameWindow extends JFrame {
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // adding panel on frame
         jFrame.add(gamePanel);
-        // center window
-        jFrame.setLocationRelativeTo(null);
         jFrame.setResizable(false);
         // window should fit panelSize
         jFrame.pack();
+        // center window
+        jFrame.setLocationRelativeTo(null);
         // setVisible always last call avoid bugs
         jFrame.setVisible(true);
         // check if focus is still in window

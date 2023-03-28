@@ -1,5 +1,6 @@
 package gameStates;
 
+import entities.EnemyManager;
 import entities.Player;
 import levels.LevelManager;
 import main.Game;
@@ -18,6 +19,7 @@ import static utils.Constants.Environment.*;
 public class Playing extends State implements StateMethods {
     private Player player;
     private LevelManager levelManager;
+    private EnemyManager enemyManager;
     private boolean isPause = false;
     private PauseOverlay pauseOverlay;
     private int xLevelOffset;
@@ -43,6 +45,7 @@ public class Playing extends State implements StateMethods {
 
     private void initClasses() {
         levelManager = new LevelManager(game);
+        enemyManager = new EnemyManager(this);
         player = new Player(200, 200, (int) (64 * Game.SCALE), (int) (40 * Game.SCALE));
         player.loadLevelData(levelManager.getCurrentLevel().getLvlData());
         pauseOverlay = new PauseOverlay(this);
@@ -53,6 +56,7 @@ public class Playing extends State implements StateMethods {
         if (!isPause) {
             levelManager.update();
             player.update();
+            enemyManager.update(levelManager.getCurrentLevel().getLvlData(), player);
             checkCloseToBorder();
         } else {
             pauseOverlay.update();
@@ -63,7 +67,7 @@ public class Playing extends State implements StateMethods {
         int playerX = (int)(player.getHitBox().x);
         int diff = playerX - xLevelOffset;
         if (diff > rightBorder) {
-            xLevelOffset += diff - rightBorder;
+          xLevelOffset += diff - rightBorder;
         } else if (diff < leftBorder) {
             xLevelOffset += diff - leftBorder;
         }
@@ -80,6 +84,7 @@ public class Playing extends State implements StateMethods {
         drawClouds(g);
         levelManager.draw(g, xLevelOffset);
         player.render(g, xLevelOffset);
+        enemyManager.draw(g, xLevelOffset);
         if (isPause) {
             g.setColor(new Color(0,0,0,150));
             g.fillRect(0,0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
@@ -94,6 +99,9 @@ public class Playing extends State implements StateMethods {
         for (int i = 0; i < smallCloudPos.length; i++) {
             g.drawImage(smallCloud, SMALL_CLOUD_WIDTH * 4 * i - (int)(xLevelOffset * 0.7), smallCloudPos[i], SMALL_CLOUD_WIDTH, SMALL_CLOUD_HEIGHT, null);
         }
+    }
+    public void resetAll() {
+        // reset player, enemy, lvl etc.
     }
 
     @Override

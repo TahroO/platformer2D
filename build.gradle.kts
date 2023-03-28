@@ -10,6 +10,10 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    implementation("org.jbox2d:jbox2d-library:2.2.1.1")
+}
+
 application {
     mainClass.set("main.Main")
 }
