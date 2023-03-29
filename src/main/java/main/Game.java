@@ -3,6 +3,7 @@ package main;
 import gameStates.GameState;
 import gameStates.Menu;
 import gameStates.*;
+import utils.LoadSave;
 
 
 import java.awt.*;
@@ -33,6 +34,7 @@ public class Game implements Runnable {
         // combine panel and frame in constructor parameter
         gameWindow = new GameWindow(gamePanel);
         // make sure inputs are recognized inside window
+        gamePanel.setFocusable(true);
         gamePanel.requestFocus();
         // starting infinite gameLoop, all methods go before here
         startGameLoop();
