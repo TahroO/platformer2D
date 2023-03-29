@@ -1,5 +1,6 @@
 package entities;
 
+import gameStates.Playing;
 import main.Game;
 import utils.LoadSave;
 
@@ -41,15 +42,18 @@ public class Player extends Entity {
     private int healthBarXStart = (int) (34 * Game.SCALE);
     private int healthBarYStart = (int) (14 * Game.SCALE);
     private int maxHealth = 100;
-    private int currentHealth = 40;
+    private int currentHealth = maxHealth;
     private int healthWidth = healthBarWidth;
     // attackBox
     private Rectangle2D.Float attackBox;
     private int flipX = 0;
     private int flipW = 1;
+    private boolean attackChecked;
+    private Playing playing;
 
-    public Player(float x, float y, int width, int height) {
+    public Player(float x, float y, int width, int height, Playing playing) {
         super(x, y, width, height);
+        this.playing = playing;
         loadAnimation();
         this.width = width;
         this.height = height;
@@ -64,14 +68,29 @@ public class Player extends Entity {
 
     public void update() {
         updateHealthBar();
+        if (currentHealth <= 0) {
+            playing.setGameOver(true);
+            return;
+        }
         updateAttackBox();
         // move object by increasing delta values when events occur
         updatePosition();
+        if (attacking) {
+            checkAttack();
+        }
         // update animation
         updateAnimationTick();
         // check what type of animation should be used
         setAnimation();
 
+    }
+
+    private void checkAttack() {
+        if (attackChecked || aniIndex != 1) {
+            return;
+        }
+        attackChecked = true;
+        playing.checkEnemyHit(attackBox);
     }
 
     private void updateAttackBox() {
@@ -95,7 +114,7 @@ public class Player extends Entity {
                 width * flipW, height, null);
         // draw hitBox onTop of player
 //        drawHitBox(g);
-        drawAttackBox(g, lvlOffset);
+/*        drawAttackBox(g, lvlOffset);*/
         drawUI(g);
     }
 
@@ -121,6 +140,7 @@ public class Player extends Entity {
                 // end of array go back to first
                 aniIndex = 0;
                 attacking = false;
+                attackChecked = false;
             }
         }
     }
@@ -143,6 +163,11 @@ public class Player extends Entity {
         }
         if (attacking) {
             playerAction = ATTACK;
+            if (startAni != ATTACK) {
+                aniIndex = 1;
+                aniTick = 0;
+                return;
+            }
         }
         if (startAni != playerAction) {
             resetAniTick();
@@ -311,5 +336,19 @@ public class Player extends Entity {
     }
     public void setJump(boolean jump) {
         this.jump = jump;
+    }
+
+    public void resetAll() {
+        resetDirBooleans();
+        inAir = false;
+        attacking = false;
+        moving = false;
+        playerAction = IDLE;
+        currentHealth = maxHealth;
+        hitBox.x = x;
+        hitBox.y = y;
+        if (!isEntityOnFloor(hitBox, lvlData)) {
+            inAir = true;
+        }
     }
 }

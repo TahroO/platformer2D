@@ -23,6 +23,7 @@ public abstract class Enemy extends Entity {
     protected int maxHealth;
     protected int currentHealth;
     protected boolean active = true;
+    protected boolean attackChecked;
 
     public Enemy(float x, float y, int width, int height, int enemyType) {
         super(x, y, width, height);
@@ -107,6 +108,12 @@ public abstract class Enemy extends Entity {
             newState(HIT);
         }
     }
+    protected void checkPlayerHit(Rectangle2D.Float attackBox, Player player) {
+        if (attackBox.intersects(player.hitBox)) {
+            player.changeHealth(-getEnemyDmg(enemyType));
+        }
+        attackChecked = true;
+    }
     protected void updateAnimationTick() {
         aniTick++;
         if (aniTick >= aniSpeed) {
@@ -129,6 +136,15 @@ public abstract class Enemy extends Entity {
         } else {
             walkDir = LEFT;
         }
+    }
+    public void resetEnemy() {
+        hitBox.x = x;
+        hitBox.y = y;
+        firstUpdate = true;
+        currentHealth = maxHealth;
+        newState(IDLE);
+        active = true;
+        fallSpeed = 0;
     }
 
     public int getAniIndex() {

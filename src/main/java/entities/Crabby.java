@@ -5,10 +5,8 @@ import main.Game;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-import static utils.Constants.Directions.LEFT;
 import static utils.Constants.Directions.RIGHT;
 import static utils.Constants.EnemyConstants.*;
-import static utils.HelpMethods.*;
 
 public class Crabby extends Enemy{
     private Rectangle2D.Float attackBox;
@@ -25,7 +23,7 @@ public class Crabby extends Enemy{
     }
 
     public void update(int[][] lvlData, Player player) {
-        updateMove(lvlData, player);
+        updateBehavior(lvlData, player);
         updateAnimationTick();
         updateAttackBox();
     }
@@ -35,7 +33,7 @@ public class Crabby extends Enemy{
         attackBox.y = hitBox.y;
     }
 
-    private void updateMove(int[][] lvlData, Player player) {
+    private void updateBehavior(int[][] lvlData, Player player) {
         if (firstUpdate) {
             firstUpdateCheck(lvlData);
         }
@@ -43,21 +41,29 @@ public class Crabby extends Enemy{
             updateInAir(lvlData);
         } else {
             switch (enemyState) {
-                case IDLE:
-                    newState(RUNNING);
-                    break;
-                case RUNNING:
+                case IDLE -> newState(RUNNING);
+                case RUNNING -> {
                     if (canSeePlayer(lvlData, player)) {
                         turnTowardsPlayer(player);
                     }
                     if (isPlayerCloseForAttack(player)) {
-                       newState(ATTACK);
+                        newState(ATTACK);
                     }
                     move(lvlData);
-                    break;
+                }
+                case ATTACK -> {
+                    if (aniIndex == 0) {
+                        attackChecked = false;
+                    }
+                    if (aniIndex == 3 && !attackChecked) {
+                        checkPlayerHit(attackBox, player);
+                    }
+                }
             }
         }
     }
+
+
     public void drawAttackBox(Graphics g, int xLvlOffset) {
         g.setColor(Color.RED);
         g.drawRect((int)(attackBox.x - xLvlOffset), (int)attackBox.y, (int)attackBox.width, (int)attackBox.height);

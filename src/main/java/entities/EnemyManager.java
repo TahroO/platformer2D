@@ -43,7 +43,7 @@ public class EnemyManager {
                         (int) crabby.getHitBox().x - xLevelOffset - CRABBY_DRAWOFFSET_X + crabby.flipX(),
                         (int) crabby.getHitBox().y - CRABBY_DRAWOFFSET_Y,
                         CRABBY_WIDTH * crabby.flipW(), CRABBY_HEIGHT, null);
-                crabby.drawAttackBox(g, xLevelOffset);
+/*                crabby.drawAttackBox(g, xLevelOffset);*/
 
             }
         }
@@ -67,6 +67,12 @@ public class EnemyManager {
                 crabbyArr[j][i] = tmp.getSubimage(i * CRABBY_WIDTH_DEFAULT, j * CRABBY_HEIGHT_DEFAULT,
                         CRABBY_WIDTH_DEFAULT, CRABBY_HEIGHT_DEFAULT);
             }
+        }
+    }
+
+    public void resetAllEnemies() {
+        for (Crabby crabby : crabbies) {
+            crabby.resetEnemy();
         }
     }
 }
