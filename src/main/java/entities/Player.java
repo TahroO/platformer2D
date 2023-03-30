@@ -77,6 +77,9 @@ public class Player extends Entity {
         updateAttackBox();
         // move object by increasing delta values when events occur
         updatePosition();
+        if (moving) {
+            checkPotionTouched();
+        }
         if (attacking) {
             checkAttack();
         }
@@ -87,12 +90,17 @@ public class Player extends Entity {
 
     }
 
+    private void checkPotionTouched() {
+        playing.checkPotionTouched(hitBox);
+    }
+
     private void checkAttack() {
         if (attackChecked || aniIndex != 1) {
             return;
         }
         attackChecked = true;
         playing.checkEnemyHit(attackBox);
+        playing.checkObjectHit(attackBox);
     }
 
     private void updateAttackBox() {
@@ -329,5 +337,9 @@ public class Player extends Entity {
         if (!isEntityOnFloor(hitBox, lvlData)) {
             inAir = true;
         }
+    }
+
+    public void changePower(int bluePotionValue) {
+        System.out.println("added power");
     }
 }

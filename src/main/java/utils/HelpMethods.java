@@ -3,6 +3,8 @@ package utils;
 import com.sun.source.tree.BreakTree;
 import entities.Crabby;
 import main.Game;
+import objects.GameContainer;
+import objects.Potion;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -10,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import static utils.Constants.EnemyConstants.CRABBY;
+import static utils.Constants.ObjectConstants.*;
 
 public class HelpMethods {
     // check collision with hitBox corners
@@ -174,5 +177,33 @@ public class HelpMethods {
             }
         }
         return new Point(1 * Game.TILES_SIZE, 1 * Game.TILES_SIZE);
+    }
+    public static ArrayList<Potion> getPotions(BufferedImage img) {
+        ArrayList<Potion> list = new ArrayList<>();
+        for (int j = 0; j < img.getHeight(); j++) {
+            for (int i = 0; i < img.getWidth(); i++) {
+                // transferring the pixelColor from img !! i and j switched positions !!
+                Color color = new Color(img.getRGB(i, j));
+                int value = color.getBlue();
+                if (value == RED_POTION || value == BLUE_POTION) {
+                    list.add(new Potion(i * Game.TILES_SIZE, j * Game.TILES_SIZE, value));
+                }
+            }
+        }
+        return list;
+    }
+    public static ArrayList<GameContainer> getContainers(BufferedImage img) {
+        ArrayList<GameContainer> list = new ArrayList<>();
+        for (int j = 0; j < img.getHeight(); j++) {
+            for (int i = 0; i < img.getWidth(); i++) {
+                // transferring the pixelColor from img !! i and j switched positions !!
+                Color color = new Color(img.getRGB(i, j));
+                int value = color.getBlue();
+                if (value == BARREL || value == BOX) {
+                    list.add(new GameContainer(i * Game.TILES_SIZE, j * Game.TILES_SIZE, value));
+                }
+            }
+        }
+        return list;
     }
 }
