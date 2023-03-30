@@ -43,7 +43,7 @@ public class EnemyManager {
     private void drawCrabs(Graphics g, int xLevelOffset) {
         for (Crabby crabby : crabbies) {
             if (crabby.isActive()) {
-                g.drawImage(crabbyArr[crabby.getEnemyState()][crabby.getAniIndex()],
+                g.drawImage(crabbyArr[crabby.getState()][crabby.getAniIndex()],
                         (int) crabby.getHitBox().x - xLevelOffset - CRABBY_DRAWOFFSET_X + crabby.flipX(),
                         (int) crabby.getHitBox().y - CRABBY_DRAWOFFSET_Y,
                         CRABBY_WIDTH * crabby.flipW(), CRABBY_HEIGHT, null);
