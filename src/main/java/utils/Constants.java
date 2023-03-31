@@ -6,6 +6,13 @@ import objects.GameObject;
 public class Constants {
     public static final float GRAVITY = 0.04f * Game.SCALE;
     public static final int ANI_SPEED = 25;
+    public static class Projectiles {
+        public static final int CANNON_BALL_DEFAULT_WIDTH = 15;
+        public static final int CANNON_BALL_DEFAULT_HEIGHT = 15;
+        public static final int CANNON_BALL_WIDTH = (int) (CANNON_BALL_DEFAULT_WIDTH * Game.SCALE);
+        public static final int CANNON_BALL_HEIGHT = (int) (CANNON_BALL_DEFAULT_HEIGHT * Game.SCALE);
+        public static final float SPEED = 0.75f * Game.SCALE;
+    }
 
     public static class ObjectConstants {
         public static final int RED_POTION = 0;
@@ -13,6 +20,8 @@ public class Constants {
         public static final int BARREL = 2;
         public static final int BOX = 3;
         public static final int SPIKE = 4;
+        public static final int CANNON_LEFT = 5;
+        public static final int CANNON_RIGHT = 6;
         public static final int RED_POTION_VALUE = 15;
         public static final int BLUE_POTION_VALUE = 10;
         public static final int CONTAINER_WIDTH_DEFAULT = 40;
@@ -27,6 +36,10 @@ public class Constants {
         public static final int SPIKE_HEIGHT_DEFAULT = 32;
         public static final int SPIKE_WIDTH = (int) (Game.SCALE * SPIKE_WIDTH_DEFAULT);
         public static final int SPIKE_HEIGHT = (int) (Game.SCALE * SPIKE_HEIGHT_DEFAULT);
+        public static final int CANNON_WIDTH_DEFAULT = 40;
+        public static final int CANNON_HEIGHT_DEFAULT = 26;
+        public static final int CANNON_WIDTH = (int) (Game.SCALE * CANNON_WIDTH_DEFAULT);
+        public static final int CANNON_HEIGHT = (int) (Game.SCALE * CANNON_HEIGHT_DEFAULT);
 
         public static int getSpriteAmount(int object_type) {
             switch (object_type) {
@@ -35,6 +48,9 @@ public class Constants {
                 }
                 case BARREL, BOX -> {
                     return 8;
+                }
+                case CANNON_LEFT, CANNON_RIGHT -> {
+                    return 7;
                 }
             }
             return 1;

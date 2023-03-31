@@ -3,9 +3,7 @@ package utils;
 import com.sun.source.tree.BreakTree;
 import entities.Crabby;
 import main.Game;
-import objects.GameContainer;
-import objects.Potion;
-import objects.Spike;
+import objects.*;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -57,6 +55,11 @@ public class HelpMethods {
             return true;
         }
         return false;
+    }
+    public static boolean isProjectileHittingLevel(Projectile projectile, int[][] lvlData) {
+        return isSolid(projectile.getHitBox().x + projectile.getHitBox().width / 2,
+                projectile.getHitBox().y + projectile.getHitBox().height / 2,
+                lvlData);
     }
 
     // check if rectangle collides with border of tile
@@ -113,15 +116,33 @@ public class HelpMethods {
             return isSolid(hitBox.x + xSpeed, hitBox.y + hitBox.height + 1, lvlData);
         }
     }
-    public static boolean isAllTileWalkable(int xStart, int xEnd, int y, int[][] lvlData) {
+    public static boolean CanCannonSeePlayer(int[][] lvlData, Rectangle2D.Float firstHitBox,
+                                             Rectangle2D.Float secondHitBox, int yTile) {
+        int firstXTile = (int) (firstHitBox.x / Game.TILES_SIZE);
+        int secondXTile = (int) (secondHitBox.x / Game.TILES_SIZE);
+        if (firstXTile > secondXTile) {
+            return isAllTilesClear(secondXTile, firstXTile, yTile, lvlData);
+        } else {
+            return isAllTilesClear(firstXTile, secondXTile, yTile, lvlData);
+        }
+    }
+    public static boolean isAllTilesClear(int xStart, int xEnd, int y, int[][] lvlData) {
         for (int i = 0; i < xEnd - xStart; i++) {
             if (isTileSolid(xStart + i, y, lvlData)) {
                 return false;
             }
-            if (!isTileSolid(xStart + i, y + 1, lvlData)) {
-                return false;
+        }
+        return true;
+    }
+    public static boolean isAllTileWalkable(int xStart, int xEnd, int y, int[][] lvlData) {
+        if (isAllTilesClear(xStart, xEnd, y, lvlData)) {
+            for (int i = 0; i < xEnd - xStart; i++) {
+                if (!isTileSolid(xStart + i, y + 1, lvlData)) {
+                    return false;
+                }
             }
-        } return true;
+        }
+        return true;
     }
 
     public static boolean isSightClear(int[][] lvlData, Rectangle2D.Float firstHitBox,
@@ -217,6 +238,20 @@ public class HelpMethods {
                 int value = color.getBlue();
                 if (value == SPIKE) {
                     list.add(new Spike(i * Game.TILES_SIZE, j * Game.TILES_SIZE, SPIKE));
+                }
+            }
+        }
+        return list;
+    }
+    public static ArrayList<Cannon> getCannons(BufferedImage img) {
+        ArrayList<Cannon> list = new ArrayList<>();
+        for (int j = 0; j < img.getHeight(); j++) {
+            for (int i = 0; i < img.getWidth(); i++) {
+                // transferring the pixelColor from img !! i and j switched positions !!
+                Color color = new Color(img.getRGB(i, j));
+                int value = color.getBlue();
+                if (value == CANNON_LEFT || value == CANNON_RIGHT) {
+                    list.add(new Cannon(i * Game.TILES_SIZE, j * Game.TILES_SIZE, value));
                 }
             }
         }
