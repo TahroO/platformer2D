@@ -244,20 +244,23 @@ public class Playing extends State implements StateMethods {
     public void checkPotionTouched(Rectangle2D.Float hitBox) {
         objectManager.checkObjectTouched(hitBox);
     }
+    public void checkSpikesTouched(Player player) {
+        objectManager.checkSpikesTouched(player);
+    }
+
     public void checkObjectHit(Rectangle2D.Float attackBox) {
         objectManager.checkObjectHit(attackBox);
     }
-
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
     }
     public EnemyManager getEnemyManager() {
         return enemyManager;
     }
+
     public void setMaxLvlOffsetX(int lvlOffset)  {
         this.maxLvlOffsetX = lvlOffset;
     }
-
     public void setLevelCompleted(boolean levelCompleted) {
         this.lvlCompleted = levelCompleted;
     }
@@ -265,6 +268,6 @@ public class Playing extends State implements StateMethods {
         return objectManager;
     }
 
-
+    public LevelManager getLevelManager() { return levelManager; }
 
 }

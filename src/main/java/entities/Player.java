@@ -79,6 +79,7 @@ public class Player extends Entity {
         updatePosition();
         if (moving) {
             checkPotionTouched();
+            checkSpikesTouched();
         }
         if (attacking) {
             checkAttack();
@@ -88,6 +89,10 @@ public class Player extends Entity {
         // check what type of animation should be used
         setAnimation();
 
+    }
+
+    private void checkSpikesTouched() {
+        playing.checkSpikesTouched(this);
     }
 
     private void checkPotionTouched() {
@@ -341,5 +346,9 @@ public class Player extends Entity {
 
     public void changePower(int bluePotionValue) {
         System.out.println("added power");
+    }
+
+    public void kill() {
+        currentHealth = 0;
     }
 }
