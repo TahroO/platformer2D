@@ -13,7 +13,9 @@ import static utils.Constants.UI.VolumeButtons.VOLUME_HEIGHT;
 public class AudioOptions {
     private VolumeButton volumeButton;
     private SoundButton musicButton, sfxButton;
-    public AudioOptions() {
+    private Game game;
+    public AudioOptions(Game game) {
+        this.game = game;
         createSoundButtons();
         createVolumeButton();
     }
@@ -42,7 +44,12 @@ public class AudioOptions {
     }
     public void mouseDragged(MouseEvent event) {
         if (volumeButton.isMousePressed()) {
+            float valueBefore = volumeButton.getFloatValue();
             volumeButton.changeX(event.getX());
+            float valueAfter = volumeButton.getFloatValue();
+            if (valueBefore != valueAfter) {
+                game.getAudioPlayer().setVolume(valueAfter);
+            }
         }
     }
 
@@ -61,10 +68,12 @@ public class AudioOptions {
         if (isIn(event, musicButton)) {
             if (musicButton.isMousePressed()) {
                 musicButton.setMuted(!musicButton.isMuted());
+                game.getAudioPlayer().toggleSongMute();
             }
         } else if (isIn(event, sfxButton)) {
             if (sfxButton.isMousePressed()) {
                 sfxButton.setMuted(!sfxButton.isMuted());
+                game.getAudioPlayer().toggleEffectMute();
             }
         }
 

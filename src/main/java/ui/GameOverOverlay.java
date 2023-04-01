@@ -56,10 +56,7 @@ public class GameOverOverlay {
         play.update();
     }
     public void keyPressed(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            playing.resetAll();
-            GameState.state = GameState.MENU;
-        }
+
     }
     private boolean isIn(UrmButton button, MouseEvent event) {
         return button.getBounds().contains(event.getX(), event.getY());
@@ -77,11 +74,12 @@ public class GameOverOverlay {
         if (isIn(menu, event)) {
             if (menu.isMousePressed()) {
                 playing.resetAll();
-                GameState.state = GameState.MENU;
+                playing.setGameState(GameState.MENU);
             }
         } else if (isIn(play, event)) {
             if (play.isMousePressed()) {
                 playing.resetAll();
+                playing.getGame().getAudioPlayer().setLevelSong(playing.getLevelManager().getlvl());
             }
         }
         menu.resetBooleans();
