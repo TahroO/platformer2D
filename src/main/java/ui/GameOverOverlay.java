@@ -4,27 +4,94 @@ import entities.Player;
 import gameStates.GameState;
 import gameStates.Playing;
 import main.Game;
+import utils.LoadSave;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
+
+import static utils.Constants.UI.URMButtons.URM_SIZE;
 
 public class GameOverOverlay {
     private Playing playing;
+    private BufferedImage img;
+    private int imgX, imgY, imgW, imgH;
+    private UrmButton menu, play;
     public GameOverOverlay(Playing playing) {
         this.playing = playing;
+        createImg();
+        createButtons();
     }
+
+    private void createButtons() {
+        int menuX = (int)(335 * Game.SCALE);
+        int playX = (int)(440 * Game.SCALE);
+        int y = (int)(195 * Game.SCALE);
+        play = new UrmButton(playX, y, URM_SIZE, URM_SIZE, 0);
+        menu = new UrmButton(menuX, y, URM_SIZE, URM_SIZE, 2);
+    }
+
+    private void createImg() {
+        img = LoadSave.getSpriteAtlas(LoadSave.DEATH_SCREEN);
+        imgW = (int) (img.getWidth() * Game.SCALE);
+        imgH = (int) (img.getHeight() * Game.SCALE);
+        imgX = Game.GAME_WIDTH / 2 - imgW / 2;
+        imgY = (int) (100 * Game.SCALE);
+    }
+
     public void draw(Graphics g) {
         g.setColor(new Color(0,0,0,200));
         g.fillRect(0,0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
-        g.setColor(Color.white);
+        g.drawImage(img, imgX, imgY, imgW, imgH, null);
+        menu.draw(g);
+        play.draw(g);
+/*        g.setColor(Color.white);
         g.drawString("Game Over", Game.GAME_WIDTH / 2, 150);
-        g.drawString("Press esc to enter Main Menu", Game.GAME_WIDTH / 2, 300);
+        g.drawString("Press esc to enter Main Menu", Game.GAME_WIDTH / 2, 300);*/
+    }
+    public void update() {
+        menu.update();
+        play.update();
     }
     public void keyPressed(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.VK_ESCAPE) {
             playing.resetAll();
             GameState.state = GameState.MENU;
+        }
+    }
+    private boolean isIn(UrmButton button, MouseEvent event) {
+        return button.getBounds().contains(event.getX(), event.getY());
+    }
+    public void mouseMoved(MouseEvent event) {
+        play.setMouseOver(false);
+        menu.setMouseOver(false);
+        if (isIn(menu, event)) {
+            menu.setMouseOver(true);
+        } else if (isIn(play, event)) {
+            play.setMouseOver(true);
+        }
+    }
+    public void mouseReleased(MouseEvent event) {
+        if (isIn(menu, event)) {
+            if (menu.isMousePressed()) {
+                playing.resetAll();
+                GameState.state = GameState.MENU;
+            }
+        } else if (isIn(play, event)) {
+            if (play.isMousePressed()) {
+                playing.resetAll();
+            }
+        }
+        menu.resetBooleans();
+        play.resetBooleans();
+    }
+    public void mousePressed(MouseEvent event) {
+        if (isIn(menu, event)) {
+            menu.setMousePressed(true);
+        } else if (isIn(play, event)) {
+            play.setMousePressed(true);
         }
     }
 }

@@ -39,6 +39,7 @@ public class Playing extends State implements StateMethods {
     private Random random = new Random();
     private boolean gameOver;
     private boolean lvlCompleted;
+    private boolean playerDying;
     public Playing(Game game) {
         super(game);
         initClasses();
@@ -85,7 +86,11 @@ public class Playing extends State implements StateMethods {
             pauseOverlay.update();
         } else if (lvlCompleted) {
             levelCompleteOverlay.update();
-        } else if (!gameOver){
+        } else if (gameOver) {
+            gameOverOverlay.update();
+        } else if (playerDying) {
+            player.update();
+        } else {
             levelManager.update();
             player.update();
             objectManager.update(levelManager.getCurrentLevel().getLvlData(), player);
@@ -141,6 +146,7 @@ public class Playing extends State implements StateMethods {
         gameOver = false;
         isPause = false;
         lvlCompleted = false;
+        playerDying = false;
         player.resetAll();
         enemyManager.resetAllEnemies();
         objectManager.resetAllObjects();
@@ -170,6 +176,8 @@ public class Playing extends State implements StateMethods {
             } else if (lvlCompleted){
                 levelCompleteOverlay.mousePressed(event);
             }
+        }  else {
+            gameOverOverlay.mousePressed(event);
         }
     }
 
@@ -181,6 +189,8 @@ public class Playing extends State implements StateMethods {
             } else if (lvlCompleted){
                 levelCompleteOverlay.mouseReleased(event);
             }
+        } else {
+            gameOverOverlay.mouseReleased(event);
         }
     }
 
@@ -192,6 +202,8 @@ public class Playing extends State implements StateMethods {
             } else if (lvlCompleted){
                 levelCompleteOverlay.mouseMoved(event);
             }
+        } else {
+            gameOverOverlay.mouseMoved(event);
         }
     }
     public void unpauseGame() {
@@ -270,4 +282,7 @@ public class Playing extends State implements StateMethods {
 
     public LevelManager getLevelManager() { return levelManager; }
 
+    public void setPlayerDying(boolean playerDying) {
+        this.playerDying = playerDying;
+    }
 }

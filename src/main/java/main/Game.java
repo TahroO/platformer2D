@@ -3,6 +3,7 @@ package main;
 import gameStates.GameState;
 import gameStates.Menu;
 import gameStates.*;
+import ui.AudioOptions;
 import utils.LoadSave;
 
 
@@ -16,6 +17,8 @@ public class Game implements Runnable {
     private final int UPS_SET = 200;
     private Playing playing;
     private Menu menu;
+    private GameOptions gameOptions;
+    private AudioOptions audioOptions;
     public final static int TILES_DEFAULT_SIZE = 32;
     // scale should always be a round number / level and player scalable
     public final static float SCALE = 2f;
@@ -41,8 +44,10 @@ public class Game implements Runnable {
     }
 
     private void initClasses() {
+        audioOptions = new AudioOptions();
         menu = new Menu(this);
         playing = new Playing(this);
+        gameOptions = new GameOptions(this);
     }
 
     // run the gameLoop in own thread to keep performance stable
@@ -60,6 +65,7 @@ public class Game implements Runnable {
                 playing.update();
                 break;
             case OPTIONS:
+                gameOptions.update();
                 break;
             case QUIT:
             default:
@@ -77,6 +83,9 @@ public class Game implements Runnable {
                 break;
             case PLAYING:
                 playing.draw(g);
+                break;
+            case OPTIONS:
+                gameOptions.draw(g);
                 break;
             default:
                 break;
@@ -137,5 +146,11 @@ public class Game implements Runnable {
 
     public Playing getPlaying() {
         return playing;
+    }
+    public GameOptions getGameOptions() {
+        return gameOptions;
+    }
+    public AudioOptions getAudioOptions() {
+        return audioOptions;
     }
 }

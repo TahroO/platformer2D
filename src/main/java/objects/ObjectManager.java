@@ -129,12 +129,15 @@ public class ObjectManager {
 
     private void updateProjectiles(int[][] lvlData, Player player) {
         for (Projectile projectile : projectiles) {
-            projectile.updatePos();
-            if (projectile.getHitBox().intersects(player.getHitBox())) {
-                player.changeHealth(-10);
-                projectile.setActive(false);
-            } else if (isProjectileHittingLevel(projectile, lvlData)) {
-                projectile.setActive(false);
+            if (projectile.isActive()) {
+                projectile.updatePos();
+
+                if (projectile.getHitBox().intersects(player.getHitBox())) {
+                    player.changeHealth(-5);
+                    projectile.setActive(false);
+                } else if (isProjectileHittingLevel(projectile, lvlData)) {
+                    projectile.setActive(false);
+                }
             }
         }
     }
@@ -199,9 +202,11 @@ public class ObjectManager {
 
     private void drawProjectiles(Graphics g, int xLvlOffset) {
         for (Projectile projectile : projectiles) {
-            g.drawImage(cannonBallImg, (int) (projectile.getHitBox().x - xLvlOffset),
-                    (int) (projectile.getHitBox().y),
-                    CANNON_BALL_WIDTH, CANNON_BALL_HEIGHT, null);
+            if (projectile.isActive()) {
+                g.drawImage(cannonBallImg, (int) (projectile.getHitBox().x - xLvlOffset),
+                        (int) (projectile.getHitBox().y),
+                        CANNON_BALL_WIDTH, CANNON_BALL_HEIGHT, null);
+            }
         }
     }
 
