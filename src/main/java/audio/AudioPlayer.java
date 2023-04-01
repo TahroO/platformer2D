@@ -18,7 +18,7 @@ public class AudioPlayer {
     public static int ATTACK_THREE = 6;
     private Clip[] songs, effects;
     private int currentSongID;
-    private float volume = 1f;
+    private float volume = 0.5f;
     private boolean songMute, effectMute;
     private Random rnd = new Random();
 
