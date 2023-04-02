@@ -21,7 +21,4 @@ public class Cannon extends GameObject{
     public int getTileY() {
         return tileY;
     }
-/*    public void draw(Graphics g) {
-
-    }*/
 }

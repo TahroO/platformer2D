@@ -11,6 +11,7 @@ public abstract class Entity {
     // hitBox using rectangle2D
     protected Rectangle2D.Float hitBox;
     protected int aniTick, aniIndex;
+
     protected int state;
     protected float airSpeed;
     protected boolean inAir = false;
@@ -24,8 +25,9 @@ public abstract class Entity {
         this.width = width;
         this.height = height;
     }
+
     protected void drawHitBox(Graphics g, int xLvlOffset) {
-        // for debugging hitBox
+
         g.setColor(Color.MAGENTA);
         g.drawRect((int)hitBox.x - xLvlOffset, (int)hitBox.y, (int)hitBox.width, (int)hitBox.height);
     }

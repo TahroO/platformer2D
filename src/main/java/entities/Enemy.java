@@ -14,7 +14,7 @@ import static utils.HelpMethods.*;
 public abstract class Enemy extends Entity {
     protected int enemyType;
     protected boolean firstUpdate = true;
-    protected float walkSpeed = 0.35f * Game.SCALE;
+    protected float walkSpeed;
     protected int walkDir = LEFT;
     protected int tileY;
     protected float attackDistance = Game.TILES_SIZE;
@@ -73,13 +73,7 @@ public abstract class Enemy extends Entity {
     protected boolean canSeePlayer(int[][] lvlData, Player player) {
         // same tile in y?
         int playerTileY = (int)player.getHitBox().y / Game.TILES_SIZE;
-        if (playerTileY == tileY) {
-            if (isPlayerInRange(player)) {
-                if (isSightClear(lvlData, hitBox, player.hitBox, tileY)) {
-                    return true;
-                }
-            }
-        } return false;
+        return playerTileY == tileY && isPlayerInRange(player) && isSightClear(lvlData, hitBox, player.hitBox, tileY);
     }
 
     protected boolean isPlayerInRange(Player player) {
